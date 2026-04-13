@@ -44,7 +44,7 @@ public final class EasyTier {
     
     /// 启动 EasyTier。
     ///
-    /// 如果已经启动了一个进程，旧进程会被 `SIGTERM`。
+    /// 如果已经启动了一个进程，会先调用 `terminate()` 终止旧进程（通常对应发送 `SIGTERM`）。
     /// - Parameters:
     ///   - args: `easytier-core` 的参数。
     ///   - terminationHandler: 进程退出回调，不会在正常 `terminate()` 时被调用。
@@ -158,9 +158,9 @@ public final class EasyTier {
         case p2pOnly
         
         /// 指定初始连接的节点地址。
-        /// - Parameter address：节点地址
+        /// - Parameter address: 节点地址
         ///
-        /// 对应参数：`--peers=<address>`
+        /// 对应参数：`--peers <address>`
         case peer(address: String)
         
         /// 启用多线程运行时，不指定时默认为单线程。
@@ -176,7 +176,7 @@ public final class EasyTier {
         /// 指定压缩算法。
         /// - Parameter algorithm: 使用的压缩算法，默认为 `none`。
         ///
-        /// 对应参数：`--compression=<algorithm>`
+        /// 对应参数：`--compression <algorithm>`
         case compression(algorithm: String)
         
         /// 启用 KCP 代理 TCP 流。

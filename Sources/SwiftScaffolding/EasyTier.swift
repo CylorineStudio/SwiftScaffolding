@@ -62,6 +62,7 @@ public final class EasyTier {
             case .latencyFirst: ["--latency-first"]
             case .compression(let algorithm): ["--compression", algorithm]
             case .enableKcpProxy: ["--enable-kcp-proxy"]
+            case .custom(let args): args
             }
         }
         Logger.info("Launching easytier-core with \(args)")
@@ -182,6 +183,11 @@ public final class EasyTier {
         ///
         /// 对应参数：`--enable-kcp-proxy`
         case enableKcpProxy
+        
+        /// 自定义选项。
+        ///
+        /// 对应参数：`<args>`
+        case custom(_ args: [String])
     }
 }
 

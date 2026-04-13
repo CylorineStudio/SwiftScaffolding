@@ -24,16 +24,27 @@ public final class EasyTier {
     ///   - cliURL: `easytier-cli` 的路径。
     ///   - logURL: `easytier-core` 日志路径，为 `nil` 时不输出日志。
     ///   - options: 启动时的选项。
-    public init(coreURL: URL, cliURL: URL, logURL: URL?, _ options: Option...) {
+    public init(coreURL: URL, cliURL: URL, logURL: URL?, options: [Option]) {
         self.coreURL = coreURL
         self.cliURL = cliURL
         self.logURL = logURL
         self.options = options
     }
     
+    /// 创建一个 EasyTier 实例。
+    ///
+    /// - Parameters:
+    ///   - coreURL: `easytier-core` 的路径。
+    ///   - cliURL: `easytier-cli` 的路径。
+    ///   - logURL: `easytier-core` 日志路径，为 `nil` 时不输出日志。
+    ///   - options: 启动时的选项。
+    public convenience init(coreURL: URL, cliURL: URL, logURL: URL?, _ options: Option...) {
+        self.init(coreURL: coreURL, cliURL: cliURL, logURL: logURL, options: options)
+    }
+    
     /// 启动 EasyTier。
     ///
-    /// 如果已经启动了一个进程，旧进程会被杀死。
+    /// 如果已经启动了一个进程，会先调用 `terminate()` 终止旧进程（通常对应发送 `SIGTERM`）。
     /// - Parameters:
     ///   - args: `easytier-core` 的参数。
     ///   - terminationHandler: 进程退出回调，不会在正常 `terminate()` 时被调用。
@@ -46,7 +57,12 @@ public final class EasyTier {
         let args: [String] = args + rpcArgs + options.flatMap { option in
             switch option {
             case .p2pOnly: ["--p2p-only"]
-            case .peer(let address): ["-p", address]
+            case .peer(let address): ["--peers", address]
+            case .multiThread: ["--multi-thread"]
+            case .latencyFirst: ["--latency-first"]
+            case .compression(let algorithm): ["--compression", algorithm]
+            case .enableKcpProxy: ["--enable-kcp-proxy"]
+            case .custom(let args): args
             }
         }
         Logger.info("Launching easytier-core with \(args)")
@@ -136,13 +152,42 @@ public final class EasyTier {
     }
     
     public enum Option {
-        /// 是否开启仅 P2P 模式，不转发流量。
-        /// `--p2p-only`
+        /// 通过 P2P 方式建立连接，不转发流量。
+        ///
+        /// 对应参数：`--p2p-only`
         case p2pOnly
         
-        /// 最初要连接的对等节点。
-        /// `-p`, `${address}`
+        /// 指定初始连接的节点地址。
+        /// - Parameter address: 节点地址
+        ///
+        /// 对应参数：`--peers <address>`
         case peer(address: String)
+        
+        /// 启用多线程运行时，不指定时默认为单线程。
+        ///
+        /// 对应参数：`--multi-thread`
+        case multiThread
+        
+        /// 优先选择低延迟路径进行转发，默认按最短路径转发。
+        ///
+        /// 对应参数：`--latency-first`
+        case latencyFirst
+        
+        /// 指定压缩算法。
+        /// - Parameter algorithm: 使用的压缩算法，默认为 `none`。
+        ///
+        /// 对应参数：`--compression <algorithm>`
+        case compression(algorithm: String)
+        
+        /// 启用 KCP 代理 TCP 流。
+        ///
+        /// 对应参数：`--enable-kcp-proxy`
+        case enableKcpProxy
+        
+        /// 自定义选项。
+        ///
+        /// 对应参数：`<args>`
+        case custom(_ args: [String])
     }
 }
 

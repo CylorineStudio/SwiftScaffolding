@@ -2,7 +2,10 @@
 //  EasyTier.swift
 //  SwiftScaffolding
 //
-//  Created by 温迪 on 2025/10/26.
+//  Copyright (c) 2025-2026 CylorineStudio. All rights reserved.
+//
+//  Use of this source code is governed by an MIT-style
+//  license that can be found in the LICENSE file.
 //
 
 import Foundation

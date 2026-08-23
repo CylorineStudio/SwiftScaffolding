@@ -2,7 +2,10 @@
 //  PlayerInfo.swift
 //  SwiftScaffolding
 //
-//  Created by AnemoFlower on 2026/2/28.
+//  Copyright (c) 2025-2026 CylorineStudio. All rights reserved.
+//
+//  Use of this source code is governed by an MIT-style
+//  license that can be found in the LICENSE file.
 //
 
 import Foundation
